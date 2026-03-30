@@ -60,7 +60,7 @@ end
 ---@param subject string The commit subject line
 ---@return boolean is_breaking True if this is a breaking change
 function M.is_breaking_change(subject)
-  return subject:match("BREAKING CHANGE") or subject:match("^%w+!:") or subject:match("^%w+%b()!:")
+  return (subject:match("BREAKING CHANGE") or subject:match("^%w+!:") or subject:match("^%w+%b()!:")) ~= nil
 end
 
 ---Parse a single commit line into hash and subject.
