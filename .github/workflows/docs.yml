@@ -12,7 +12,7 @@ jobs:
   vimdoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Generate vimdoc
         uses: kdheepak/panvimdoc@main
@@ -24,7 +24,7 @@ jobs:
           treesitter: true
 
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: auto-generate vimdoc"
           file_pattern: doc/
@@ -32,14 +32,14 @@ jobs:
   luadoc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install LuaLS
-        uses: leafo/gh-actions-lua@v10
+        uses: leafo/gh-actions-lua@v12
         with:
           luaVersion: "5.1"
 
-      - uses: leafo/gh-actions-luarocks@v4
+      - uses: leafo/gh-actions-luarocks@v6
 
       - name: Generate API docs
         run: |
@@ -62,7 +62,7 @@ jobs:
           done
 
       - name: Push changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: auto-generate API reference"
           file_pattern: doc/
