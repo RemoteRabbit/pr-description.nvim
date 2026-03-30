@@ -14,7 +14,7 @@ jobs:
       matrix:
         neovim: [stable, nightly]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: rhysd/action-setup-vim@v1
         with:
@@ -35,7 +35,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: JohnnyMorganz/stylua-action@v4
         with:
@@ -43,11 +43,11 @@ jobs:
           version: latest
           args: --check lua/ plugin/ tests/
 
-      - uses: leafo/gh-actions-lua@v10
+      - uses: leafo/gh-actions-lua@v12
         with:
           luaVersion: "5.1"
 
-      - uses: leafo/gh-actions-luarocks@v4
+      - uses: leafo/gh-actions-luarocks@v6
 
       - run: luarocks install luacheck
       - run: luacheck lua/ plugin/ tests/ --config .luacheckrc
