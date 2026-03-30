@@ -65,6 +65,26 @@ local description, err = pr.generate_description({ is_gitlab = false, to_clipboa
 nvim --headless -c "lua print(require('pr-description').generate_description())" -c "qa"
 ```
 
+## Commit Types
+
+The plugin recognizes [conventional commit](https://www.conventionalcommits.org/) prefixes and groups them into sections:
+
+| Type | Section | When to use |
+|---|---|---|
+| `feat` | ✨ Features | A new feature or user-facing capability |
+| `fix` | 🐛 Bug Fixes | A bug fix |
+| `perf` | ⚡ Performance | A change that improves performance |
+| `docs` | 📚 Documentation | Documentation-only changes |
+| `refactor` | 🔨 Refactoring | Code changes that neither fix a bug nor add a feature |
+| `test` | 🧪 Tests | Adding or updating tests |
+| `style` | 💄 Style | Formatting, whitespace, or code style changes (no logic) |
+| `chore` | 🔧 Maintenance | Dependency updates, tooling, or other upkeep |
+| `ci` / `build` / `ops` | 🏗️ Operations | CI/CD, build system, or infrastructure changes |
+| `revert` | ⏪ Reverts | Reverting a previous commit |
+| `wip` | 📦 Other Changes | Work in progress (appears under "Other Changes") |
+
+Commits with a `!` suffix (e.g., `feat!: remove API`) or a `BREAKING CHANGE` footer are grouped under **⚠️ Breaking Changes** regardless of type. Commits that don't match any prefix appear under **📦 Other Changes**.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and guidelines.

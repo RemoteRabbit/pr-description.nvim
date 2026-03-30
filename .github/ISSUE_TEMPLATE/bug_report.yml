@@ -1,0 +1,60 @@
+name: Bug Report
+description: Report a bug in pr-description.nvim
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Please fill out the sections below.
+
+  - type: input
+    id: neovim-version
+    attributes:
+      label: Neovim version
+      description: "Output of `nvim --version`"
+      placeholder: "NVIM v0.10.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: plugin-config
+    attributes:
+      label: Plugin configuration
+      description: Your `setup()` call and how you installed the plugin.
+      render: lua
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to trigger the bug.
+      placeholder: |
+        1. Open a git repo with commits
+        2. Run `:PRDescription`
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened. Include error messages from `:messages` if applicable.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other relevant info (OS, terminal, screenshots, etc.)
