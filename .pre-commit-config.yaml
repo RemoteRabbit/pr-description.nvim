@@ -1,0 +1,38 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+      - id: mixed-line-ending
+
+  - repo: https://github.com/JohnnyMorganz/StyLua
+    rev: v2.3.1
+    hooks:
+      - id: stylua-github
+        args: [--config-path=stylua.toml]
+
+  - repo: https://github.com/luarocks/luacheck
+    rev: v1.2.0
+    hooks:
+      - id: luacheck
+        args: [--config=.luacheckrc]
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.2.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: check-lua-syntax
+        name: Check Lua Syntax
+        entry: bash -c 'for f in "$@"; do luac -p "$f" || exit 1; done' --
+        language: system
+        files: \.lua$
+        types: [lua]

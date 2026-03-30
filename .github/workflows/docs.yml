@@ -1,0 +1,68 @@
+name: Documentation
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "lua/**/*.lua"
+      - "doc/**"
+  workflow_dispatch:
+
+jobs:
+  vimdoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate vimdoc
+        uses: kdheepak/panvimdoc@main
+        with:
+          vimdoc: pr-description
+          version: "Neovim >= 0.9.0"
+          titledatepattern: "%Y-%m-%d"
+          demojify: false
+          treesitter: true
+
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-generate vimdoc"
+          file_pattern: doc/
+
+  luadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install LuaLS
+        uses: leafo/gh-actions-lua@v10
+        with:
+          luaVersion: "5.1"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Generate API docs
+        run: |
+          mkdir -p doc/api
+          echo "# API Reference" > doc/api/README.md
+          echo "" >> doc/api/README.md
+          echo "Auto-generated from LuaCATS annotations." >> doc/api/README.md
+          echo "" >> doc/api/README.md
+
+          for f in lua/pr-description/*.lua; do
+            module=$(basename "$f" .lua)
+            echo "## pr-description.${module}" >> doc/api/README.md
+            echo "" >> doc/api/README.md
+            # Extract @brief blocks
+            sed -n '/---@brief \[\[/,/---@brief \]\]/{ /---@brief/d; s/^--- //; s/^---//; p; }' "$f" >> doc/api/README.md
+            echo "" >> doc/api/README.md
+            # Extract function signatures with their doc comments
+            grep -B 20 "^function M\." "$f" | grep "^---" | sed 's/^--- //' | sed 's/^---//' >> doc/api/README.md
+            echo "" >> doc/api/README.md
+          done
+
+      - name: Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: auto-generate API reference"
+          file_pattern: doc/

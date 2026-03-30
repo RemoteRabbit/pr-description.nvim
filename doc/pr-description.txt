@@ -1,0 +1,92 @@
+*pr-description.txt*  Generate PR/MR descriptions from git commits
+
+Author: remoterabbit
+License: Unlicense
+
+==============================================================================
+CONTENTS                                        *pr-description-contents*
+
+  1. Introduction ......................... |pr-description-introduction|
+  2. Setup ............................... |pr-description-setup|
+  3. Commands ............................ |pr-description-commands|
+  4. Configuration ....................... |pr-description-configuration|
+  5. API ................................. |pr-description-api|
+
+==============================================================================
+1. INTRODUCTION                                 *pr-description-introduction*
+
+pr-description.nvim generates well-formatted pull request or merge request
+descriptions by analyzing git commits and file changes. It categorizes commits
+using conventional commit patterns, links issues and tickets, and produces
+markdown-formatted output suitable for GitHub PRs or GitLab MRs.
+
+==============================================================================
+2. SETUP                                        *pr-description-setup*
+
+Using lazy.nvim: >lua
+
+  {
+    "remoterabbit/pr-description.nvim",
+    cmd = { "PRDescription", "MRDescription" },
+    opts = {
+      jira_base_url = "https://company.atlassian.net/browse",
+    },
+  }
+<
+
+==============================================================================
+3. COMMANDS                                     *pr-description-commands*
+
+:PRDescription                                  *:PRDescription*
+  Generate a GitHub PR description and open it in a scratch buffer.
+
+:PRDescription!                                 *:PRDescription!*
+  Generate a GitHub PR description and copy it to the clipboard.
+
+:MRDescription                                  *:MRDescription*
+  Generate a GitLab MR description and open it in a scratch buffer.
+
+:MRDescription!                                 *:MRDescription!*
+  Generate a GitLab MR description and copy it to the clipboard.
+
+==============================================================================
+4. CONFIGURATION                                *pr-description-configuration*
+
+Default configuration: >lua
+
+  require("pr-description").setup({
+    -- Base URL for Jira ticket links (nil = no Jira linking)
+    jira_base_url = nil,
+
+    -- Auto-detect GitHub vs GitLab from remote URL
+    auto_detect_platform = true,
+
+    -- Prompt when commits exceed threshold
+    confirm_large_pr = true,
+    large_pr_threshold = 10,
+
+    -- Override section headers (key = category, value = markdown header)
+    sections = nil,
+  })
+<
+
+==============================================================================
+5. API                                          *pr-description-api*
+
+pr-description.setup({opts})                    *pr-description.setup()*
+  Configure the plugin. See |pr-description-configuration|.
+
+pr-description.generate_description({opts})     *pr-description.generate_description()*
+  Generate a PR/MR description string.
+
+  Parameters: ~
+    {opts}  (table|nil) Options table:
+      - is_gitlab (boolean|nil): Force GitLab mode
+      - to_clipboard (boolean|nil): Copy to clipboard
+
+  Returns: ~
+    description (string|nil): Generated markdown
+    error (string|nil): Error message on failure
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
