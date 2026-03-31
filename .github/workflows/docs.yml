@@ -8,6 +8,9 @@ on:
       - "doc/**"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   vimdoc:
     runs-on: ubuntu-latest
