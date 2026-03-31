@@ -11,24 +11,34 @@ local config = require("pr-description.config")
 
 local M = {}
 
----@type {key: string, title: string}[]
+---@type {key: string, icon: string, label: string}[]
 ---Section headers for each commit category with emoji prefixes.
 ---Order here controls the order sections appear in the generated description.
 local CATEGORY_SECTIONS = {
-  { key = "breaking", title = "## ⚠️ Breaking Changes" },
-  { key = "features", title = "## ✨ Features" },
-  { key = "fixes", title = "## 🐛 Bug Fixes" },
-  { key = "perf", title = "## ⚡ Performance" },
-  { key = "docs", title = "## 📚 Documentation" },
-  { key = "refactor", title = "## 🔨 Refactoring" },
-  { key = "tests", title = "## 🧪 Tests" },
-  { key = "style", title = "## 💄 Style" },
-  { key = "chores", title = "## 🔧 Maintenance" },
-  { key = "ops", title = "## 🏗️ Operations" },
-  { key = "reverts", title = "## ⏪ Reverts" },
-  { key = "others", title = "## 📦 Other Changes" },
-  { key = "wip", title = "## 🚧 Work in Progress" },
+  { key = "breaking", icon = "⚠️", label = "Breaking Changes" },
+  { key = "features", icon = "✨", label = "Features" },
+  { key = "fixes", icon = "🐛", label = "Bug Fixes" },
+  { key = "perf", icon = "⚡", label = "Performance" },
+  { key = "docs", icon = "📚", label = "Documentation" },
+  { key = "refactor", icon = "🔨", label = "Refactoring" },
+  { key = "tests", icon = "🧪", label = "Tests" },
+  { key = "style", icon = "💄", label = "Style" },
+  { key = "chores", icon = "🔧", label = "Maintenance" },
+  { key = "ops", icon = "🏗️", label = "Operations" },
+  { key = "reverts", icon = "⏪", label = "Reverts" },
+  { key = "others", icon = "📦", label = "Other Changes" },
+  { key = "wip", icon = "🚧", label = "Work in Progress" },
 }
+
+---Build a section title with or without icon based on config.
+---@param section {icon: string, label: string}
+---@return string
+local function section_title(section)
+  if config.options.enable_icons then
+    return "## " .. section.icon .. " " .. section.label
+  end
+  return "## " .. section.label
+end
 
 local GROUP_RANK = {
   Root = 1,
@@ -68,7 +78,7 @@ function M.add_category_sections(lines, categories)
   for _, section in ipairs(CATEGORY_SECTIONS) do
     local items = categories[section.key]
     if items and #items > 0 then
-      local title = (custom_sections and custom_sections[section.key]) or section.title
+      local title = (custom_sections and custom_sections[section.key]) or section_title(section)
       table.insert(lines, title)
       for _, item in ipairs(items) do
         table.insert(lines, item)
@@ -122,7 +132,7 @@ function M.group_files(file_list, file_stats)
       groups[group_name] = {}
     end
 
-    local symbol = STATUS_SYMBOLS[file.status] or ""
+    local symbol = config.options.enable_icons and (STATUS_SYMBOLS[file.status] or "") or ""
     local stats = file_stats[file.path]
     local stats_str = ""
 
@@ -177,7 +187,8 @@ function M.add_file_changes_section(lines, file_groups, file_stats)
     return
   end
 
-  table.insert(lines, "## 📁 File Changes")
+  local file_changes_title = config.options.enable_icons and "## 📁 File Changes" or "## File Changes"
+  table.insert(lines, file_changes_title)
   table.insert(lines, "")
 
   local sorted_groups = M.sort_groups(file_groups)
