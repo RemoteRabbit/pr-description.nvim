@@ -27,7 +27,7 @@ jobs:
           treesitter: true
 
       - name: Create PR for vimdoc changes
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: auto-generate vimdoc"
           title: "docs: auto-generate vimdoc"
@@ -68,7 +68,7 @@ jobs:
           done
 
       - name: Create PR for API docs changes
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: auto-generate API reference"
           title: "docs: auto-generate API reference"
