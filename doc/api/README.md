@@ -93,6 +93,8 @@ and finally local main/master branches.
 Get the remote origin URL.
 @return string url The remote origin URL (may be empty if not configured)
 @return integer count Number of replacements made (from gsub)
+Fetch latest refs from origin to ensure accurate comparisons.
+@return boolean ok True if fetch succeeded or was skipped gracefully
 Find the merge-base (fork point) between two branches.
 @param base_branch string The base branch
 @param branch string The current branch
