@@ -6,9 +6,7 @@ Auto-generated from LuaCATS annotations.
 
 Configuration for pr-description.nvim.
 
-@field jira_base_url? string Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
-@field large_pr_threshold? number Number of commits before prompting (default: 10)
-@field sections? table<string, string> Override section headers (key = category, value = markdown header)
+@field strip_commit_prefix? boolean Strip conventional commit prefix/scope from output (default: true)
 @type PrDescriptionConfig
 @type PrDescriptionConfig
 Apply user configuration.
@@ -92,7 +90,6 @@ and finally local main/master branches.
 @return string|nil error Error message if no base branch could be detected
 Get the remote origin URL.
 @return string url The remote origin URL (may be empty if not configured)
-@return integer count Number of replacements made (from gsub)
 Fetch latest refs from origin to ensure accurate comparisons.
 @return boolean ok True if fetch succeeded or was skipped gracefully
 Find the merge-base (fork point) between two branches.
@@ -106,9 +103,18 @@ Uses merge-base to only include commits unique to the current branch.
 @param branch string The current branch to compare to
 @return string[]|nil commits List of commit lines (hash + subject), or nil on error
 @return string|nil error Error message if git log failed
+Get commit messages from a known merge-base to branch tip.
+@param merge_base string The merge-base commit hash
+@param branch string The current branch to compare to
+@return string[]|nil commits List of commit lines (hash + subject), or nil on error
+@return string|nil error Error message if git log failed
 Get file change status (added, modified, deleted) between branches.
 Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
+@param branch string The current branch to compare to
+@return string[] changes List of file changes in "status\tfilepath" format
+Get file change status from a known merge-base to branch tip.
+@param merge_base string The merge-base commit hash or branch ref
 @param branch string The current branch to compare to
 @return string[] changes List of file changes in "status\tfilepath" format
 Get human-readable file statistics (insertions/deletions summary).
@@ -116,9 +122,17 @@ Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
 @param branch string The current branch to compare to
 @return string stats The git diff --stat output as a single string
+Get human-readable file statistics from a known merge-base to branch tip.
+@param merge_base string The merge-base commit hash or branch ref
+@param branch string The current branch to compare to
+@return string stats The git diff --stat output as a single string
 Get machine-readable file statistics (insertions/deletions per file).
 Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
+@param branch string The current branch to compare to
+@return string[] numstat List of lines in "insertions\tdeletions\tfilepath" format
+Get machine-readable file statistics from a known merge-base to branch tip.
+@param merge_base string The merge-base commit hash or branch ref
 @param branch string The current branch to compare to
 @return string[] numstat List of lines in "insertions\tdeletions\tfilepath" format
 
@@ -213,9 +227,12 @@ Parses git commits following the conventional commit specification and
 categorizes them into groups (features, fixes, docs, etc.). Also handles
 parsing of git diff statistics for file change analysis.
 
-  wip       — Work-in-progress, not ready for review (wip:)
-  breaking  — (derived) Commits with BREAKING CHANGE or ! marker
   others    — (fallback) Commits not matching any conventional prefix
+Strip the conventional commit prefix and optional scope from a subject.
+Transforms "feat(auth): add login" to "add login", "fix!: crash" to "crash".
+Returns the subject unchanged if it doesn't match a conventional pattern.
+@param subject string The commit subject line
+@return string stripped The subject without the conventional commit prefix
 Categorize a commit subject based on conventional commit prefixes.
 @param subject string The commit subject line
 @return string category The category name (e.g., "features", "fixes", "others")
@@ -227,10 +244,6 @@ Parse a single commit line into hash and subject.
 @param line string A line from `git log --oneline` output
 @return string hash The commit hash
 @return string subject The commit subject message
-@class CommitCategories
-@field features string[] New functionality or capabilities
-@field fixes string[] Bug fixes and corrections
-@field perf string[] Performance improvements without changing behavior
 @field docs string[] Documentation-only changes
 @field refactor string[] Code restructuring without changing behavior
 @field tests string[] Adding or updating tests
@@ -241,13 +254,21 @@ Parse a single commit line into hash and subject.
 @field wip string[] Work-in-progress, not ready for review
 @field breaking string[] Commits with BREAKING CHANGE text or ! marker (derived from other categories)
 @field others string[] Commits not matching any conventional commit prefix
+@class ParseCommitsCallbacks
+@field process_subject? fun(subject: string): string Add links to a commit subject
+@field make_commit_link? fun(hash: string): string Create a markdown link for a commit hash
+@field strip_prefix? boolean Strip conventional commit prefix/scope from display text
 Parse and categorize a list of commit lines.
 @param commit_lines string[] Lines from `git log --oneline` output
-@param link_fn? fun(subject: string, hash?: string): string Optional function to add links
+@param callbacks? ParseCommitsCallbacks Optional callbacks for link processing
 @return CommitCategories categories Commits grouped by category
 @class FileStats
 @field insertions number Number of lines added
 @field deletions number Number of lines deleted
+Resolve a rename path from git's `{old => new}` notation to the new path.
+Handles formats: `prefix/{old => new}/suffix`, `{old => new}`, `old => new`.
+@param raw string The raw path from git output
+@return string filepath The resolved new file path
 Parse `git diff --numstat` output into file statistics.
 @param lines string[] Lines from `git diff --numstat` output
 @return table<string, FileStats> stats Map of filepath to insertion/deletion counts
