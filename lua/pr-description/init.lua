@@ -52,6 +52,9 @@ function M.generate_description(opts)
     return nil, err
   end
 
+  -- Fetch latest remote refs for accurate comparison
+  git.fetch_origin()
+
   -- Detect base branch
   local base_branch
   base_branch, err = git.detect_base_branch()

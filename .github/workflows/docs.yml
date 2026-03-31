@@ -27,6 +27,7 @@ jobs:
           treesitter: true
 
       - name: Create PR for vimdoc changes
+        id: vimdoc-pr
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: auto-generate vimdoc"
@@ -34,6 +35,12 @@ jobs:
           branch: docs/auto-vimdoc
           delete-branch: true
           add-paths: doc/
+
+      - name: Enable auto-merge for vimdoc PR
+        if: steps.vimdoc-pr.outputs.pull-request-number
+        run: gh pr merge --auto --squash "${{ steps.vimdoc-pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   luadoc:
     runs-on: ubuntu-latest
@@ -68,6 +75,7 @@ jobs:
           done
 
       - name: Create PR for API docs changes
+        id: api-docs-pr
         uses: peter-evans/create-pull-request@v8
         with:
           commit-message: "docs: auto-generate API reference"
@@ -75,3 +83,9 @@ jobs:
           branch: docs/auto-api-reference
           delete-branch: true
           add-paths: doc/
+
+      - name: Enable auto-merge for API docs PR
+        if: steps.api-docs-pr.outputs.pull-request-number
+        run: gh pr merge --auto --squash "${{ steps.api-docs-pr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
