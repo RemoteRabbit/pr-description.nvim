@@ -62,9 +62,13 @@ function M.add_issue_links(text, repo_url, is_gitlab)
 
   local issue_path = is_gitlab and "/-/issues/" or "/issues/"
 
-  text = text:gsub("(fixes?) #(%d+)", "%1 [#%2](" .. repo_url .. issue_path .. "%2)")
-  text = text:gsub("(closes?) #(%d+)", "%1 [#%2](" .. repo_url .. issue_path .. "%2)")
-  text = text:gsub("(resolves?) #(%d+)", "%1 [#%2](" .. repo_url .. issue_path .. "%2)")
+  local function link_issue(keyword, num)
+    return keyword .. " [#" .. num .. "](" .. repo_url .. issue_path .. num .. ")"
+  end
+
+  text = text:gsub("([Ff]ixes?) #(%d+)", link_issue)
+  text = text:gsub("([Cc]loses?) #(%d+)", link_issue)
+  text = text:gsub("([Rr]esolves?) #(%d+)", link_issue)
 
   return text
 end
@@ -105,7 +109,7 @@ function M.make_commit_link(hash, repo_url, is_gitlab)
   end
 
   local commit_path = is_gitlab and "/-/commit/" or "/commit/"
-  return " [[" .. hash .. "]](" .. repo_url .. commit_path .. hash .. ")"
+  return " [`" .. hash .. "`](" .. repo_url .. commit_path .. hash .. ")"
 end
 
 return M

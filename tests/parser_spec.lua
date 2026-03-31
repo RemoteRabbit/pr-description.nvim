@@ -82,6 +82,67 @@ describe("parser", function()
     end)
   end)
 
+  describe("strip_prefix", function()
+    it("strips type and colon", function()
+      assert.equals("add feature", parser.strip_prefix("feat: add feature"))
+    end)
+
+    it("strips type with scope", function()
+      assert.equals("add login", parser.strip_prefix("feat(auth): add login"))
+    end)
+
+    it("strips type with bang", function()
+      assert.equals("remove API", parser.strip_prefix("feat!: remove API"))
+    end)
+
+    it("strips type with scope and bang", function()
+      assert.equals("drop endpoint", parser.strip_prefix("feat(api)!: drop endpoint"))
+    end)
+
+    it("returns non-conventional subjects unchanged", function()
+      assert.equals("random commit message", parser.strip_prefix("random commit message"))
+    end)
+  end)
+
+  describe("resolve_rename_path", function()
+    it("resolves brace rename with prefix and suffix", function()
+      assert.equals("src/new/file.lua", parser.resolve_rename_path("src/{old => new}/file.lua"))
+    end)
+
+    it("resolves brace rename without prefix", function()
+      assert.equals("new.lua", parser.resolve_rename_path("{old.lua => new.lua}"))
+    end)
+
+    it("resolves simple arrow rename", function()
+      assert.equals("new.lua", parser.resolve_rename_path("old.lua => new.lua"))
+    end)
+
+    it("returns plain paths unchanged", function()
+      assert.equals("src/file.lua", parser.resolve_rename_path("src/file.lua"))
+    end)
+  end)
+
+  describe("parse_commits", function()
+    it("skips hash-only lines with no subject", function()
+      local categories = parser.parse_commits({ "abc1234" })
+      local total = 0
+      for _, items in pairs(categories) do
+        total = total + #items
+      end
+      assert.equals(0, total)
+    end)
+
+    it("strips prefix when strip_prefix is true", function()
+      local categories = parser.parse_commits({ "abc1234 feat: add login" }, { strip_prefix = true })
+      assert.equals("- add login", categories.features[1])
+    end)
+
+    it("preserves prefix when strip_prefix is false", function()
+      local categories = parser.parse_commits({ "abc1234 feat: add login" }, { strip_prefix = false })
+      assert.equals("- feat: add login", categories.features[1])
+    end)
+  end)
+
   describe("parse_file_numstat", function()
     it("parses numstat lines", function()
       local stats = parser.parse_file_numstat({

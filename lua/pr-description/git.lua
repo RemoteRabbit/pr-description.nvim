@@ -38,7 +38,7 @@ end
 function M.detect_base_branch()
   -- Try origin/HEAD (configured default branch)
   local origin_head =
-    vim.fn.system("git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null"):gsub("\n", "")
+    vim.fn.system({ "git", "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" }):gsub("\n", "")
   if vim.v.shell_error == 0 and origin_head ~= "" then
     return origin_head
   end
@@ -70,9 +70,9 @@ end
 
 ---Get the remote origin URL.
 ---@return string url The remote origin URL (may be empty if not configured)
----@return integer count Number of replacements made (from gsub)
 function M.get_remote_url()
-  return vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
+  local url = vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
+  return url
 end
 
 ---Fetch latest refs from origin to ensure accurate comparisons.
@@ -106,6 +106,15 @@ function M.get_commits(base_branch, branch)
   if not merge_base then
     return nil, mb_err
   end
+  return M.get_commits_from(merge_base, branch)
+end
+
+---Get commit messages from a known merge-base to branch tip.
+---@param merge_base string The merge-base commit hash
+---@param branch string The current branch to compare to
+---@return string[]|nil commits List of commit lines (hash + subject), or nil on error
+---@return string|nil error Error message if git log failed
+function M.get_commits_from(merge_base, branch)
   local commits = vim.fn.systemlist({
     "git",
     "log",
@@ -126,12 +135,19 @@ end
 ---@return string[] changes List of file changes in "status\tfilepath" format
 function M.get_file_changes(base_branch, branch)
   local merge_base = M.get_merge_base(base_branch, branch)
-  local base = merge_base or base_branch
+  return M.get_file_changes_from(merge_base or base_branch, branch)
+end
+
+---Get file change status from a known merge-base to branch tip.
+---@param merge_base string The merge-base commit hash or branch ref
+---@param branch string The current branch to compare to
+---@return string[] changes List of file changes in "status\tfilepath" format
+function M.get_file_changes_from(merge_base, branch)
   return vim.fn.systemlist({
     "git",
     "diff",
     "--name-status",
-    base .. ".." .. branch,
+    merge_base .. ".." .. branch,
   })
 end
 
@@ -142,12 +158,19 @@ end
 ---@return string stats The git diff --stat output as a single string
 function M.get_file_stats(base_branch, branch)
   local merge_base = M.get_merge_base(base_branch, branch)
-  local base = merge_base or base_branch
+  return M.get_file_stats_from(merge_base or base_branch, branch)
+end
+
+---Get human-readable file statistics from a known merge-base to branch tip.
+---@param merge_base string The merge-base commit hash or branch ref
+---@param branch string The current branch to compare to
+---@return string stats The git diff --stat output as a single string
+function M.get_file_stats_from(merge_base, branch)
   return vim.fn.system({
     "git",
     "diff",
     "--stat",
-    base .. ".." .. branch,
+    merge_base .. ".." .. branch,
   })
 end
 
@@ -158,12 +181,19 @@ end
 ---@return string[] numstat List of lines in "insertions\tdeletions\tfilepath" format
 function M.get_file_numstat(base_branch, branch)
   local merge_base = M.get_merge_base(base_branch, branch)
-  local base = merge_base or base_branch
+  return M.get_file_numstat_from(merge_base or base_branch, branch)
+end
+
+---Get machine-readable file statistics from a known merge-base to branch tip.
+---@param merge_base string The merge-base commit hash or branch ref
+---@param branch string The current branch to compare to
+---@return string[] numstat List of lines in "insertions\tdeletions\tfilepath" format
+function M.get_file_numstat_from(merge_base, branch)
   return vim.fn.systemlist({
     "git",
     "diff",
     "--numstat",
-    base .. ".." .. branch,
+    merge_base .. ".." .. branch,
   })
 end
 

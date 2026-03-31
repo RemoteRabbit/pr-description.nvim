@@ -78,6 +78,10 @@ describe("formatter", function()
       assert.equals("Tests", formatter.determine_file_group("tests/foo_spec.lua"))
       assert.equals("Tests", formatter.determine_file_group("foo_test.lua"))
       assert.equals("Tests", formatter.determine_file_group("foo.test.js"))
+      assert.equals("Tests", formatter.determine_file_group("foo_spec.lua"))
+      assert.equals("Tests", formatter.determine_file_group("foo.spec.ts"))
+      assert.equals("Tests", formatter.determine_file_group("spec/models/user_spec.rb"))
+      assert.equals("Tests", formatter.determine_file_group("__tests__/App.test.js"))
     end)
 
     it("groups documentation files", function()
@@ -161,6 +165,20 @@ describe("formatter", function()
       assert.equals("Root", sorted[1])
       assert.equals("Tests", sorted[2])
       assert.equals("Documentation", sorted[3])
+    end)
+
+    it("sorts Configuration before Tests and Documentation", function()
+      local groups = {
+        Configuration = { {} },
+        Tests = { {} },
+        Documentation = { {} },
+        Root = { {} },
+      }
+      local sorted = formatter.sort_groups(groups)
+      assert.equals("Root", sorted[1])
+      assert.equals("Configuration", sorted[2])
+      assert.equals("Tests", sorted[3])
+      assert.equals("Documentation", sorted[4])
     end)
 
     it("sorts unranked groups alphabetically between ranked ones", function()
