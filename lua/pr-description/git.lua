@@ -75,6 +75,13 @@ function M.get_remote_url()
   return vim.fn.system("git config --get remote.origin.url"):gsub("\n", "")
 end
 
+---Fetch latest refs from origin to ensure accurate comparisons.
+---@return boolean ok True if fetch succeeded or was skipped gracefully
+function M.fetch_origin()
+  vim.fn.system({ "git", "fetch", "origin", "--quiet" })
+  return vim.v.shell_error == 0
+end
+
 ---Find the merge-base (fork point) between two branches.
 ---@param base_branch string The base branch
 ---@param branch string The current branch
