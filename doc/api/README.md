@@ -253,4 +253,3 @@ Extracts the summary line (e.g., "5 files changed, 100 insertions(+), 20 deletio
 @return number total_files Number of files changed
 @return number total_insertions Total lines inserted
 @return number total_deletions Total lines deleted
-

@@ -52,19 +52,19 @@ CONFIGURATION               *pr-description-pr-description.nvim-configuration*
     require("pr-description").setup({
       -- Auto-detect GitHub vs GitLab from remote URL (default: true)
       auto_detect_platform = true,
-    
+
       -- Prompt when more than `large_pr_threshold` commits (default: true)
       confirm_large_pr = true,
-    
+
       -- Include icons in final PR/MR pr-description (default: true)
       enable_icons = true,
-    
+
       -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
       jira_base_url = nil,
-    
+
       -- Number of commits before prompting (default: 10)
       large_pr_threshold = 10,
-    
+
       -- Override section headers (key = category, value = markdown header)
       sections = nil,
     })
