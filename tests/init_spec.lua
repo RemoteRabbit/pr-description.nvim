@@ -221,10 +221,18 @@ describe("init", function()
 
     it("copies to clipboard when to_clipboard is set", function()
       stub_git()
+      local setreg_calls = {}
+      local orig_setreg = vim.fn.setreg
+      vim.fn.setreg = function(reg, val)
+        table.insert(setreg_calls, { reg = reg, val = val })
+        return orig_setreg(reg, val)
+      end
       local desc = pr.generate_description({ to_clipboard = true })
+      vim.fn.setreg = orig_setreg
       assert.truthy(desc)
-      local reg = vim.fn.getreg("+")
-      assert.equals(desc, reg)
+      assert.equals(1, #setreg_calls)
+      assert.equals("+", setreg_calls[1].reg)
+      assert.equals(desc, setreg_calls[1].val)
     end)
   end)
 

@@ -12,7 +12,7 @@ $(PLENARY_DIR):
 	git clone --depth 1 https://github.com/nvim-lua/plenary.nvim $(PLENARY_DIR)
 
 lint:
-	@luacheck lua/ plugin/ tests/ --config .luacheckrc
+	@lua5.4 -e 'package.path="$(HOME)/.luarocks/share/lua/5.4/?.lua;$(HOME)/.luarocks/share/lua/5.4/?/init.lua;"..package.path;package.cpath="$(HOME)/.luarocks/lib/lua/5.4/?.so;/usr/lib/lua/5.4/?.so;"..package.cpath' $(HOME)/.luarocks/lib/luarocks/rocks-5.4/luacheck/1.2.0-1/bin/luacheck lua/ plugin/ tests/ --config .luacheckrc
 
 format:
 	@stylua --config-path stylua.toml lua/ plugin/ tests/

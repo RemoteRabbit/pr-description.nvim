@@ -208,7 +208,11 @@ describe("integration", function()
       -- Create a new branch with one commit
       vim.fn.system("cd " .. vim.fn.shellescape(tmpdir) .. " && git checkout main")
       vim.fn.system("cd " .. vim.fn.shellescape(tmpdir) .. " && git checkout -b feat/single")
-      vim.fn.system("cd " .. vim.fn.shellescape(tmpdir) .. " && echo 'one' > single.txt && git add -A && git commit -m 'feat: single change'")
+      vim.fn.system(
+        "cd "
+          .. vim.fn.shellescape(tmpdir)
+          .. " && echo 'one' > single.txt && git add -A && git commit -m 'feat: single change'"
+      )
 
       local desc, err = pr.generate_description()
       assert.is_nil(err)
@@ -217,7 +221,11 @@ describe("integration", function()
     end)
 
     it("handles non-conventional commits under Other Changes", function()
-      vim.fn.system("cd " .. vim.fn.shellescape(tmpdir) .. " && echo 'misc' > misc.txt && git add -A && git commit -m 'random update'")
+      vim.fn.system(
+        "cd "
+          .. vim.fn.shellescape(tmpdir)
+          .. " && echo 'misc' > misc.txt && git add -A && git commit -m 'random update'"
+      )
 
       local desc = pr.generate_description()
       assert.truthy(desc:find("## 📦 Other Changes", 1, true))
@@ -225,7 +233,11 @@ describe("integration", function()
     end)
 
     it("handles breaking changes", function()
-      vim.fn.system("cd " .. vim.fn.shellescape(tmpdir) .. " && echo 'break' > break.txt && git add -A && git commit -m 'feat!: remove deprecated API'")
+      vim.fn.system(
+        "cd "
+          .. vim.fn.shellescape(tmpdir)
+          .. " && echo 'break' > break.txt && git add -A && git commit -m 'feat!: remove deprecated API'"
+      )
 
       local desc = pr.generate_description()
       assert.truthy(desc:find("## ⚠️ Breaking Changes", 1, true))
