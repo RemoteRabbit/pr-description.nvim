@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.1.0](https://github.com/RemoteRabbit/pr-description.nvim/compare/v1.0.0...v1.1.0) (2026-03-31)
+
+
+### Features
+
+* Add `enable_stats_footer` option. Defaults to `true` ([#18](https://github.com/RemoteRabbit/pr-description.nvim/issues/18)) ([3dd441e](https://github.com/RemoteRabbit/pr-description.nvim/commit/3dd441e8a2186e639ff59022976fc48d9e86c3ac))
+* Add toggle for description icons ([#9](https://github.com/RemoteRabbit/pr-description.nvim/issues/9)) ([df739c6](https://github.com/RemoteRabbit/pr-description.nvim/commit/df739c6df7bba32c87920ca7292a5de627688bb5))
+
+
+### Bug Fixes
+
+* Adds contents write permissions to vimdoc and luadoc workflows ([#11](https://github.com/RemoteRabbit/pr-description.nvim/issues/11)) ([000ffb1](https://github.com/RemoteRabbit/pr-description.nvim/commit/000ffb11a4234031c075b641a5b07d8b2b5fcea4))
+
 ## 1.0.0 (2026-03-30)
 
 
