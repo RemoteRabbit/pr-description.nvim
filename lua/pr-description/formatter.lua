@@ -48,6 +48,7 @@ local GROUP_RANK = {
   Components = 5,
   Utils = 6,
   Config = 7,
+  Configuration = 8,
   Tests = 98,
   Documentation = 99,
 }
@@ -98,7 +99,15 @@ function M.determine_file_group(filepath)
     if #parts > 1 then
       return (parts[2]:gsub("^%l", string.upper))
     end
-  elseif filepath:match("^test") or filepath:match("_test%.") or filepath:match("%.test%.") then
+  elseif
+    filepath:match("^test")
+    or filepath:match("_test%.")
+    or filepath:match("%.test%.")
+    or filepath:match("_spec%.")
+    or filepath:match("%.spec%.")
+    or filepath:match("^spec/")
+    or filepath:match("^__tests__/")
+  then
     return "Tests"
   elseif filepath:match("^doc") or filepath:match("README") or filepath:match("%.md$") then
     return "Documentation"

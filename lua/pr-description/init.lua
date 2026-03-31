@@ -53,7 +53,9 @@ function M.generate_description(opts)
   end
 
   -- Fetch latest remote refs for accurate comparison
-  git.fetch_origin()
+  if cfg.fetch_before_generate then
+    git.fetch_origin()
+  end
 
   -- Detect base branch
   local base_branch
@@ -72,9 +74,16 @@ function M.generate_description(opts)
   end
   is_gitlab = is_gitlab or false
 
+  -- Find merge-base once and reuse for all comparisons
+  local merge_base
+  merge_base, err = git.get_merge_base(base_branch, branch)
+  if not merge_base then
+    return nil, err
+  end
+
   -- Get commits
   local commit_lines
-  commit_lines, err = git.get_commits(base_branch, branch)
+  commit_lines, err = git.get_commits_from(merge_base, branch)
   if not commit_lines then
     return nil, err
   end
@@ -92,21 +101,21 @@ function M.generate_description(opts)
     end
   end
 
-  -- Create link helper function
-  local function process_links(subject, hash)
-    if hash then
-      return links.make_commit_link(hash, repo_url, is_gitlab)
-    end
-    return links.add_all_links(subject, repo_url, is_gitlab, cfg.jira_base_url)
-  end
-
   -- Parse commits into categories
-  local categories = parser.parse_commits(commit_lines, process_links)
+  local categories = parser.parse_commits(commit_lines, {
+    strip_prefix = cfg.strip_commit_prefix,
+    process_subject = function(subject)
+      return links.add_all_links(subject, repo_url, is_gitlab, cfg.jira_base_url)
+    end,
+    make_commit_link = function(hash)
+      return links.make_commit_link(hash, repo_url, is_gitlab)
+    end,
+  })
 
   -- Get file statistics
-  local file_changes = git.get_file_changes(base_branch, branch)
-  local file_stats_output = git.get_file_stats(base_branch, branch)
-  local numstat_lines = git.get_file_numstat(base_branch, branch)
+  local file_changes = git.get_file_changes_from(merge_base, branch)
+  local file_stats_output = git.get_file_stats_from(merge_base, branch)
+  local numstat_lines = git.get_file_numstat_from(merge_base, branch)
 
   -- Parse file data
   local file_stats = parser.parse_file_numstat(numstat_lines)

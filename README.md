@@ -48,6 +48,9 @@ require("pr-description").setup({
   -- Include stats footer in final PR/MR pr-description (default: true)
   enable_stats_footer = true,
 
+  -- Fetch origin before generating to ensure accurate comparison (default: true)
+  fetch_before_generate = true,
+
   -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
   jira_base_url = nil,
 
@@ -56,6 +59,9 @@ require("pr-description").setup({
 
   -- Override section headers (key = category, value = markdown header)
   sections = nil,
+
+  -- Strip conventional commit prefix/scope from output (default: true)
+  strip_commit_prefix = true,
 })
 ```
 <!-- CONFIG_END -->

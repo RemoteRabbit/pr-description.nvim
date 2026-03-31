@@ -41,6 +41,23 @@ local COMMIT_PATTERNS = {
   { category = "wip", patterns = { "^wip[!%(:]" } },
 }
 
+---Strip the conventional commit prefix and optional scope from a subject.
+---Transforms "feat(auth): add login" to "add login", "fix!: crash" to "crash".
+---Returns the subject unchanged if it doesn't match a conventional pattern.
+---@param subject string The commit subject line
+---@return string stripped The subject without the conventional commit prefix
+function M.strip_prefix(subject)
+  local stripped = subject:match("^%w+%b()!?:%s*(.+)")
+  if stripped then
+    return stripped
+  end
+  stripped = subject:match("^%w+!?:%s*(.+)")
+  if stripped then
+    return stripped
+  end
+  return subject
+end
+
 ---Categorize a commit subject based on conventional commit prefixes.
 ---@param subject string The commit subject line
 ---@return string category The category name (e.g., "features", "fixes", "others")
@@ -88,11 +105,18 @@ end
 ---@field breaking string[] Commits with BREAKING CHANGE text or ! marker (derived from other categories)
 ---@field others string[] Commits not matching any conventional commit prefix
 
+---@class ParseCommitsCallbacks
+---@field process_subject? fun(subject: string): string Add links to a commit subject
+---@field make_commit_link? fun(hash: string): string Create a markdown link for a commit hash
+---@field strip_prefix? boolean Strip conventional commit prefix/scope from display text
+
 ---Parse and categorize a list of commit lines.
 ---@param commit_lines string[] Lines from `git log --oneline` output
----@param link_fn? fun(subject: string, hash?: string): string Optional function to add links
+---@param callbacks? ParseCommitsCallbacks Optional callbacks for link processing
 ---@return CommitCategories categories Commits grouped by category
-function M.parse_commits(commit_lines, link_fn)
+function M.parse_commits(commit_lines, callbacks)
+  callbacks = callbacks or {}
+
   local categories = {
     features = {},
     fixes = {},
@@ -111,10 +135,12 @@ function M.parse_commits(commit_lines, link_fn)
 
   for _, line in ipairs(commit_lines) do
     local hash, subject = M.parse_commit_line(line)
-    if subject then
-      local processed_subject = link_fn and link_fn(subject) or subject
-      local commit_link = link_fn and link_fn(nil, hash) or ""
-      local entry = "- " .. processed_subject .. (commit_link or "")
+    if subject and subject ~= "" then
+      local display_subject = callbacks.strip_prefix and M.strip_prefix(subject) or subject
+      local processed_subject = callbacks.process_subject and callbacks.process_subject(display_subject)
+        or display_subject
+      local commit_link = callbacks.make_commit_link and callbacks.make_commit_link(hash) or ""
+      local entry = "- " .. processed_subject .. commit_link
 
       local category = M.categorize_commit(subject)
       table.insert(categories[category], entry)
@@ -132,6 +158,22 @@ end
 ---@field insertions number Number of lines added
 ---@field deletions number Number of lines deleted
 
+---Resolve a rename path from git's `{old => new}` notation to the new path.
+---Handles formats: `prefix/{old => new}/suffix`, `{old => new}`, `old => new`.
+---@param raw string The raw path from git output
+---@return string filepath The resolved new file path
+function M.resolve_rename_path(raw)
+  local prefix, new, suffix = raw:match("^(.-)%{.* => (.-)%}(.*)$")
+  if prefix then
+    return prefix .. new .. suffix
+  end
+  local simple_new = raw:match(".* => (.+)")
+  if simple_new then
+    return simple_new
+  end
+  return raw
+end
+
 ---Parse `git diff --numstat` output into file statistics.
 ---@param lines string[] Lines from `git diff --numstat` output
 ---@return table<string, FileStats> stats Map of filepath to insertion/deletion counts
@@ -141,7 +183,7 @@ function M.parse_file_numstat(lines)
     local cols = vim.split(line, "\t", { plain = true })
     if #cols >= 3 then
       local insertions_str, deletions_str = cols[1], cols[2]
-      local filepath = cols[3]:match(".*=> (.+)") or cols[3]
+      local filepath = M.resolve_rename_path(cols[3])
       stats[filepath] = {
         insertions = insertions_str == "-" and 0 or tonumber(insertions_str) or 0,
         deletions = deletions_str == "-" and 0 or tonumber(deletions_str) or 0,
