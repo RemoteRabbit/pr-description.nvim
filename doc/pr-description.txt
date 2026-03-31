@@ -1,92 +1,172 @@
-*pr-description.txt*  Generate PR/MR descriptions from git commits
-
-Author: remoterabbit
-License: Unlicense
+*pr-description.txt*        For Neovim >= 0.9.0        Last change: 2026-03-31
 
 ==============================================================================
-CONTENTS                                        *pr-description-contents*
+Table of Contents                           *pr-description-table-of-contents*
 
-  1. Introduction ......................... |pr-description-introduction|
-  2. Setup ............................... |pr-description-setup|
-  3. Commands ............................ |pr-description-commands|
-  4. Configuration ....................... |pr-description-configuration|
-  5. API ................................. |pr-description-api|
-
-==============================================================================
-1. INTRODUCTION                                 *pr-description-introduction*
-
-pr-description.nvim generates well-formatted pull request or merge request
-descriptions by analyzing git commits and file changes. It categorizes commits
-using conventional commit patterns, links issues and tickets, and produces
-markdown-formatted output suitable for GitHub PRs or GitLab MRs.
+1. pr-description.nvim                    |pr-description-pr-description.nvim|
+  - Features                     |pr-description-pr-description.nvim-features|
+  - Installation             |pr-description-pr-description.nvim-installation|
+  - Configuration           |pr-description-pr-description.nvim-configuration|
+  - Usage                           |pr-description-pr-description.nvim-usage|
+  - Commit Types             |pr-description-pr-description.nvim-commit-types|
+  - Contributing             |pr-description-pr-description.nvim-contributing|
+  - Helpful Links           |pr-description-pr-description.nvim-helpful-links|
+  - License                       |pr-description-pr-description.nvim-license|
 
 ==============================================================================
-2. SETUP                                        *pr-description-setup*
+1. pr-description.nvim                    *pr-description-pr-description.nvim*
 
-Using lazy.nvim: >lua
+Generate well-formatted PR/MR descriptions from your git commits.
 
-  {
-    "remoterabbit/pr-description.nvim",
-    cmd = { "PRDescription", "MRDescription" },
-    opts = {
-      jira_base_url = "https://company.atlassian.net/browse",
-    },
-  }
+Analyzes commits using conventional commit
+<https://www.conventionalcommits.org/> patterns, categorizes them, links issues
+and Jira tickets, and produces markdown output for GitHub PRs or GitLab MRs.
+
+
+FEATURES                         *pr-description-pr-description.nvim-features*
+
+- 📝 Conventional commit categorization (features, fixes, docs, etc.)
+- 🔗 Auto-links GitHub/GitLab issues and Jira tickets
+- 📊 File change statistics grouped by directory
+- 🔍 Auto-detects GitHub vs GitLab from remote URL
+- 📋 Copy to clipboard with bang commands
+
+
+INSTALLATION                 *pr-description-pr-description.nvim-installation*
+
+
+LAZY.NVIM ~
+
+>lua
+    {
+      "remoterabbit/pr-description.nvim",
+      cmd = { "PRDescription", "MRDescription" },
+      opts = {},
+    }
 <
 
-==============================================================================
-3. COMMANDS                                     *pr-description-commands*
 
-:PRDescription                                  *:PRDescription*
-  Generate a GitHub PR description and open it in a scratch buffer.
+CONFIGURATION               *pr-description-pr-description.nvim-configuration*
 
-:PRDescription!                                 *:PRDescription!*
-  Generate a GitHub PR description and copy it to the clipboard.
-
-:MRDescription                                  *:MRDescription*
-  Generate a GitLab MR description and open it in a scratch buffer.
-
-:MRDescription!                                 *:MRDescription!*
-  Generate a GitLab MR description and copy it to the clipboard.
-
-==============================================================================
-4. CONFIGURATION                                *pr-description-configuration*
-
-Default configuration: >lua
-
-  require("pr-description").setup({
-    -- Base URL for Jira ticket links (nil = no Jira linking)
-    jira_base_url = nil,
-
-    -- Auto-detect GitHub vs GitLab from remote URL
-    auto_detect_platform = true,
-
-    -- Prompt when commits exceed threshold
-    confirm_large_pr = true,
-    large_pr_threshold = 10,
-
-    -- Override section headers (key = category, value = markdown header)
-    sections = nil,
-  })
+>lua
+    require("pr-description").setup({
+      -- Auto-detect GitHub vs GitLab from remote URL (default: true)
+      auto_detect_platform = true,
+    
+      -- Prompt when more than `large_pr_threshold` commits (default: true)
+      confirm_large_pr = true,
+    
+      -- Include icons in final PR/MR pr-description (default: true)
+      enable_icons = true,
+    
+      -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
+      jira_base_url = nil,
+    
+      -- Number of commits before prompting (default: 10)
+      large_pr_threshold = 10,
+    
+      -- Override section headers (key = category, value = markdown header)
+      sections = nil,
+    })
 <
 
-==============================================================================
-5. API                                          *pr-description-api*
 
-pr-description.setup({opts})                    *pr-description.setup()*
-  Configure the plugin. See |pr-description-configuration|.
+USAGE                               *pr-description-pr-description.nvim-usage*
 
-pr-description.generate_description({opts})     *pr-description.generate_description()*
-  Generate a PR/MR description string.
+  -----------------------------------------------------------------------
+  Command                             Description
+  ----------------------------------- -----------------------------------
+  :PRDescription                      Generate GitHub PR description in a
+                                      scratch buffer
 
-  Parameters: ~
-    {opts}  (table|nil) Options table:
-      - is_gitlab (boolean|nil): Force GitLab mode
-      - to_clipboard (boolean|nil): Copy to clipboard
+  :PRDescription!                     Generate and copy to clipboard
 
-  Returns: ~
-    description (string|nil): Generated markdown
-    error (string|nil): Error message on failure
+  :MRDescription                      Generate GitLab MR description in a
+                                      scratch buffer
 
-==============================================================================
-vim:tw=78:ts=8:ft=help:norl:
+  :MRDescription!                     Generate and copy to clipboard
+  -----------------------------------------------------------------------
+
+LUA API ~
+
+>lua
+    local pr = require("pr-description")
+    local description, err = pr.generate_description({ is_gitlab = false, to_clipboard = true })
+<
+
+
+HEADLESS / CLI ~
+
+>bash
+    nvim --headless -c "lua print(require('pr-description').generate_description())" -c "qa"
+<
+
+
+COMMIT TYPES                 *pr-description-pr-description.nvim-commit-types*
+
+The plugin recognizes conventional commit
+<https://www.conventionalcommits.org/> prefixes and groups them into sections:
+
+  -----------------------------------------------------------------------
+  Type                    Section                 When to use
+  ----------------------- ----------------------- -----------------------
+  feat                    ✨ Features             A new feature or
+                                                  user-facing capability
+
+  fix                     🐛 Bug Fixes            A bug fix
+
+  perf                    ⚡ Performance          A change that improves
+                                                  performance
+
+  docs                    📚 Documentation        Documentation-only
+                                                  changes
+
+  refactor                🔨 Refactoring          Code changes that
+                                                  neither fix a bug nor
+                                                  add a feature
+
+  test                    🧪 Tests                Adding or updating
+                                                  tests
+
+  style                   💄 Style                Formatting, whitespace,
+                                                  or code style changes
+                                                  (no logic)
+
+  chore                   🔧 Maintenance          Dependency updates,
+                                                  tooling, or other
+                                                  upkeep
+
+  ci / build / ops        🏗️ Operations           CI/CD, build system, or
+                                                  infrastructure changes
+
+  revert                  ⏪ Reverts              Reverting a previous
+                                                  commit
+
+  wip                     📦 Other Changes        Work in progress
+                                                  (appears under “Other
+                                                  Changes”)
+  -----------------------------------------------------------------------
+Commits with a `!` suffix (e.g., `feat!: remove API`) or a `BREAKING CHANGE`
+footer are grouped under **⚠️ Breaking Changes** regardless of type.
+Commits that don’t match any prefix appear under **📦 Other Changes**.
+
+
+CONTRIBUTING                 *pr-description-pr-description.nvim-contributing*
+
+See CONTRIBUTING.md <CONTRIBUTING.md> for development setup, testing, and
+guidelines.
+
+
+HELPFUL LINKS               *pr-description-pr-description.nvim-helpful-links*
+
+- Conventional Commits Specification <https://www.conventionalcommits.org/en/v1.0.0/>
+- Conventional Commit Messages Cheatsheet <https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13>
+
+
+LICENSE                           *pr-description-pr-description.nvim-license*
+
+Unlicense <https://unlicense.org> — public domain
+
+Generated by panvimdoc <https://github.com/kdheepak/panvimdoc>
+
+vim:tw=78:ts=8:noet:ft=help:norl:
