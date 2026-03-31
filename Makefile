@@ -1,4 +1,4 @@
-.PHONY: test lint format check
+.PHONY: test lint format check docs
 
 PLENARY_DIR ?= /tmp/plenary.nvim
 
@@ -19,3 +19,6 @@ format:
 
 check: lint
 	@stylua --config-path stylua.toml --check lua/ plugin/ tests/
+
+docs:
+	@lua scripts/update-readme-config.lua

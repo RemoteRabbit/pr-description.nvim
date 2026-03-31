@@ -26,22 +26,29 @@ Analyzes commits using [conventional commit](https://www.conventionalcommits.org
 
 ## Configuration
 
+<!-- CONFIG_START -->
 ```lua
 require("pr-description").setup({
-  -- Base URL for Jira ticket links (nil = disabled)
-  jira_base_url = nil,
-
-  -- Auto-detect GitHub vs GitLab from remote URL
+  -- Auto-detect GitHub vs GitLab from remote URL (default: true)
   auto_detect_platform = true,
 
-  -- Prompt when commits exceed threshold
+  -- Prompt when more than `large_pr_threshold` commits (default: true)
   confirm_large_pr = true,
+
+  -- Include icons in final PR/MR pr-description (default: true)
+  enable_icons = true,
+
+  -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
+  jira_base_url = nil,
+
+  -- Number of commits before prompting (default: 10)
   large_pr_threshold = 10,
 
   -- Override section headers (key = category, value = markdown header)
   sections = nil,
 })
 ```
+<!-- CONFIG_END -->
 
 ## Usage
 

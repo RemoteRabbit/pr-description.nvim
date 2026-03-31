@@ -36,3 +36,10 @@ repos:
         language: system
         files: \.lua$
         types: [lua]
+
+      - id: update-readme-config
+        name: Update README config section
+        entry: bash -c 'lua scripts/update-readme-config.lua && git add README.md'
+        language: system
+        files: lua/pr-description/config\.lua$
+        pass_filenames: false
