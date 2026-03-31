@@ -31,8 +31,8 @@ describe("formatter", function()
       assert.equals("- feat one", lines[2])
     end)
 
-    it("omits icons when enabled_icons is false", function()
-      reset_config({ enabled_icons = false })
+    it("omits icons when enable_icons is false", function()
+      reset_config({ enable_icons = false })
       local lines = {}
       formatter.add_category_sections(lines, { features = { "- feat one" } })
       assert.equals("## Features", lines[1])
@@ -109,7 +109,7 @@ describe("formatter", function()
     end)
 
     it("omits status symbols when icons disabled", function()
-      reset_config({ enabled_icons = false })
+      reset_config({ enable_icons = false })
       local file_list = { { path = "src/main/init.lua", status = "A" } }
       local file_stats = { ["src/main/init.lua"] = { insertions = 5, deletions = 0 } }
       local groups = formatter.group_files(file_list, file_stats)
@@ -188,7 +188,7 @@ describe("formatter", function()
     end)
 
     it("omits icon in header when icons disabled", function()
-      reset_config({ enabled_icons = false })
+      reset_config({ enable_icons = false })
       local lines = {}
       local file_groups = { Root = { { path = "init.lua", symbol = "", stats = " (+1)" } } }
       local file_stats = { ["init.lua"] = { insertions = 1, deletions = 0 } }
@@ -270,7 +270,7 @@ describe("formatter", function()
     end)
 
     it("produces a complete description without icons", function()
-      reset_config({ enabled_icons = false })
+      reset_config({ enable_icons = false })
       local result = formatter.generate(
         { features = { "- feat one" } },
         { Root = { { path = "a.lua", symbol = "", stats = " (+1)" } } },
