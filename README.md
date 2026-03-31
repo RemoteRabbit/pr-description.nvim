@@ -38,6 +38,9 @@ require("pr-description").setup({
   -- Include icons in final PR/MR pr-description (default: true)
   enable_icons = true,
 
+  -- Include stats footer in final PR/MR pr-description (default: true)
+  enable_stats_footer = true,
+
   -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
   jira_base_url = nil,
 
