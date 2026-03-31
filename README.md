@@ -1,5 +1,12 @@
 # pr-description.nvim
 
+[![CI](https://github.com/remoterabbit/pr-description.nvim/actions/workflows/test.yml/badge.svg)](https://github.com/remoterabbit/pr-description.nvim/actions/workflows/test.yml)
+[![GitHub release](https://img.shields.io/github/v/release/remoterabbit/pr-description.nvim)](https://github.com/remoterabbit/pr-description.nvim/releases)
+[![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg)](https://unlicense.org)
+![Neovim](https://img.shields.io/badge/Neovim-0.8%2B-green?logo=neovim)
+![Lua](https://img.shields.io/badge/Made%20with-Lua-blue?logo=lua)
+![GitHub stars](https://img.shields.io/github/stars/remoterabbit/pr-description.nvim)
+
 Generate well-formatted PR/MR descriptions from your git commits.
 
 Analyzes commits using [conventional commit](https://www.conventionalcommits.org/) patterns, categorizes them, links issues and Jira tickets, and produces markdown output for GitHub PRs or GitLab MRs.
