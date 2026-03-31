@@ -6,7 +6,6 @@ Auto-generated from LuaCATS annotations.
 
 Configuration for pr-description.nvim.
 
-@field enable_icons? boolean Include icons in final PR/MR pr-description (default: true)
 @field jira_base_url? string Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
 @field large_pr_threshold? number Number of commits before prompting (default: 10)
 @field sections? table<string, string> Override section headers (key = category, value = markdown header)
@@ -94,20 +93,29 @@ and finally local main/master branches.
 Get the remote origin URL.
 @return string url The remote origin URL (may be empty if not configured)
 @return integer count Number of replacements made (from gsub)
+Find the merge-base (fork point) between two branches.
+@param base_branch string The base branch
+@param branch string The current branch
+@return string|nil merge_base The merge-base commit hash, or nil on error
+@return string|nil error Error message if merge-base failed
 Get commit messages between base branch and current branch.
+Uses merge-base to only include commits unique to the current branch.
 @param base_branch string The base branch to compare from
 @param branch string The current branch to compare to
 @return string[]|nil commits List of commit lines (hash + subject), or nil on error
 @return string|nil error Error message if git log failed
 Get file change status (added, modified, deleted) between branches.
+Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
 @param branch string The current branch to compare to
 @return string[] changes List of file changes in "status\tfilepath" format
 Get human-readable file statistics (insertions/deletions summary).
+Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
 @param branch string The current branch to compare to
 @return string stats The git diff --stat output as a single string
 Get machine-readable file statistics (insertions/deletions per file).
+Uses merge-base for accurate comparison.
 @param base_branch string The base branch to compare from
 @param branch string The current branch to compare to
 @return string[] numstat List of lines in "insertions\tdeletions\tfilepath" format
@@ -253,3 +261,4 @@ Extracts the summary line (e.g., "5 files changed, 100 insertions(+), 20 deletio
 @return number total_files Number of files changed
 @return number total_insertions Total lines inserted
 @return number total_deletions Total lines deleted
+
