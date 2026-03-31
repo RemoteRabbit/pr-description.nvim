@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/RemoteRabbit/pr-description.nvim/compare/v1.1.0...v1.1.1) (2026-03-31)
+
+
+### Bug Fixes
+
+* Adds git fetch call before generating desc. fallback to local ref ([#21](https://github.com/RemoteRabbit/pr-description.nvim/issues/21)) ([e177b3f](https://github.com/RemoteRabbit/pr-description.nvim/commit/e177b3f088b8c383b5ca340e5f153dab65175e1d))
+* Toggle for stripping prefix in description setup ([#24](https://github.com/RemoteRabbit/pr-description.nvim/issues/24)) ([aeaa60b](https://github.com/RemoteRabbit/pr-description.nvim/commit/aeaa60b69bcbcdc5bd335542360c35efbb2d4a8a))
+
 ## [1.1.0](https://github.com/RemoteRabbit/pr-description.nvim/compare/v1.0.0...v1.1.0) (2026-03-31)
 
 
