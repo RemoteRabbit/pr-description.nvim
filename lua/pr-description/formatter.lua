@@ -257,7 +257,9 @@ function M.generate(categories, file_groups, file_stats, stats)
   M.add_summary_section(lines)
   M.add_category_sections(lines, categories)
   M.add_file_changes_section(lines, file_groups, file_stats)
-  M.add_footer(lines, stats)
+  if config.options.enable_stats_footer then
+    M.add_footer(lines, stats)
+  end
 
   return table.concat(lines, "\n")
 end

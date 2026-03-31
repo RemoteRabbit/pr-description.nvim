@@ -247,19 +247,21 @@ describe("formatter", function()
   end)
 
   describe("generate", function()
+    local default_stats = {
+      total_files = 1,
+      total_insertions = 1,
+      total_deletions = 0,
+      total_commits = 1,
+      branch = "feat/test",
+      base_branch = "main",
+    }
+
     it("produces a complete description with icons", function()
       local result = formatter.generate(
         { features = { "- feat one" } },
         { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
         { ["a.lua"] = { insertions = 1, deletions = 0 } },
-        {
-          total_files = 1,
-          total_insertions = 1,
-          total_deletions = 0,
-          total_commits = 1,
-          branch = "feat/test",
-          base_branch = "main",
-        }
+        default_stats
       )
       assert.truthy(result:find("Features"))
       assert.truthy(result:find("✨"))
@@ -275,19 +277,39 @@ describe("formatter", function()
         { features = { "- feat one" } },
         { Root = { { path = "a.lua", symbol = "", stats = " (+1)" } } },
         { ["a.lua"] = { insertions = 1, deletions = 0 } },
-        {
-          total_files = 1,
-          total_insertions = 1,
-          total_deletions = 0,
-          total_commits = 1,
-          branch = "feat/test",
-          base_branch = "main",
-        }
+        default_stats
       )
       assert.truthy(result:find("## Features", 1, true))
       assert.falsy(result:find("✨", 1, true))
       assert.truthy(result:find("## File Changes", 1, true))
       assert.falsy(result:find("📁", 1, true))
+    end)
+
+    it("includes stats footer by default", function()
+      local result = formatter.generate(
+        { features = { "- feat one" } },
+        { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
+        { ["a.lua"] = { insertions = 1, deletions = 0 } },
+        default_stats
+      )
+      assert.truthy(result:find("**Changes:**", 1, true))
+      assert.truthy(result:find("**Commits:**", 1, true))
+      assert.truthy(result:find("**Branch:** `feat/test`", 1, true))
+      assert.truthy(result:find("**Base:** `main`", 1, true))
+    end)
+
+    it("omits stats footer when enable_stats_footer is false", function()
+      reset_config({ enable_stats_footer = false })
+      local result = formatter.generate(
+        { features = { "- feat one" } },
+        { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
+        { ["a.lua"] = { insertions = 1, deletions = 0 } },
+        default_stats
+      )
+      assert.falsy(result:find("**Changes:**", 1, true))
+      assert.falsy(result:find("**Commits:**", 1, true))
+      assert.falsy(result:find("**Branch:**", 1, true))
+      assert.falsy(result:find("**Base:**", 1, true))
     end)
   end)
 end)
