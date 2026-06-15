@@ -16,8 +16,10 @@ repos:
       - id: stylua-github
         args: [--config-path=stylua.toml]
 
-  - repo: https://github.com/luarocks/luacheck
-    rev: v1.2.0
+  - repo: https://github.com/lunarmodules/luacheck
+    # Pinned to master (post-v1.2.0) for Lua 5.5 compatibility; v1.2.0 crashes
+    # on Lua 5.5 because standards.lua reassigns a const for-loop variable.
+    rev: f47ad699b5aab8eba5494a2b63e26c24dbf486ce
     hooks:
       - id: luacheck
         args: [--config=.luacheckrc]

@@ -22,3 +22,4 @@ check: lint
 
 docs:
 	@lua scripts/update-readme-config.lua
+	@lua scripts/generate-api-docs.lua
