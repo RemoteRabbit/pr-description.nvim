@@ -50,11 +50,14 @@ Configuration for pr-description.nvim.
 ### Type: `PrDescriptionConfig`
 
 - `auto_detect_platform?` (`boolean`) — Auto-detect GitHub vs GitLab from remote URL (default: true)
+- `autofold?` (`boolean`) — Auto-fold a file change group when it has many files (default: true)
+- `autofold_threshold?` (`number`) — Number of files in a group before it auto-folds (default: 10)
 - `confirm_large_pr?` (`boolean`) — Prompt when more than `large_pr_threshold` commits (default: true)
 - `enable_icons?` (`boolean`) — Include icons in final PR/MR pr-description (default: true)
 - `enable_plugin_credit?` (`boolean`) — Include a credit link to pr-description.nvim in the footer (default: true)
 - `enable_stats_footer?` (`boolean`) — Include stats footer in final PR/MR pr-description (default: true)
 - `fetch_before_generate?` (`boolean`) — Fetch origin before generating to ensure accurate comparison (default: true)
+- `foldable_file_changes?` (`boolean`) — Wrap each file change group in a collapsible <details> block (default: false)
 - `jira_base_url?` (`string`) — Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
 - `large_pr_threshold?` (`number`) — Number of commits before prompting (default: 10)
 - `sections?` (`table<string, string>`) — Override section headers (key = category, value = markdown header)
@@ -96,8 +99,10 @@ Get the name of the current git branch.
 ### `M.detect_base_branch()`
 
 Detect the base branch to compare against.
-Tries origin/HEAD first, then falls back to origin/main, origin/master,
-and finally local main/master branches.
+Tries origin/main, origin/master, then origin/HEAD (the remote's configured
+default), and finally local main/master branches. origin/HEAD is checked
+after the well-known names because it is set only at clone time and is
+frequently stale.
 
 **Returns:**
 

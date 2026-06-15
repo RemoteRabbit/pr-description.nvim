@@ -243,6 +243,83 @@ describe("formatter", function()
       formatter.add_file_changes_section(lines, file_groups, file_stats)
       assert.equals("- `a.lua` (+3) ✨", lines[4])
     end)
+
+    it("wraps groups in collapsible blocks when foldable_file_changes is enabled", function()
+      reset_config({ foldable_file_changes = true })
+      local lines = {}
+      local file_groups = { Root = { { path = "a.lua", symbol = "", stats = " (+3)" } } }
+      local file_stats = { ["a.lua"] = { insertions = 3, deletions = 0 } }
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.equals("## 📁 File Changes", lines[1])
+      assert.equals("<details>", lines[3])
+      assert.equals("<summary><b>Root (+3/-0 lines)</b></summary>", lines[4])
+      assert.equals("", lines[5])
+      assert.equals("- `a.lua` (+3)", lines[6])
+      assert.equals("", lines[7])
+      assert.equals("</details>", lines[8])
+    end)
+
+    it("does not wrap groups when foldable_file_changes is disabled", function()
+      local lines = {}
+      local file_groups = { Root = { { path = "a.lua", symbol = "", stats = " (+3)" } } }
+      local file_stats = { ["a.lua"] = { insertions = 3, deletions = 0 } }
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.equals("### Root (+3/-0 lines)", lines[3])
+      assert.is_false(vim.tbl_contains(lines, "<details>"))
+    end)
+
+    ---Build a group with `n` files and a matching stats map.
+    ---@param n number
+    ---@return table, table
+    local function make_group(n)
+      local files, file_stats = {}, {}
+      for i = 1, n do
+        local path = string.format("f%d.lua", i)
+        table.insert(files, { path = path, symbol = "", stats = " (+1)" })
+        file_stats[path] = { insertions = 1, deletions = 0 }
+      end
+      return { Root = files }, file_stats
+    end
+
+    it("auto-folds a group at or above the threshold by default", function()
+      local lines = {}
+      local file_groups, file_stats = make_group(10)
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.is_true(vim.tbl_contains(lines, "<details>"))
+      assert.is_true(vim.tbl_contains(lines, "<summary><b>Root (+10/-0 lines)</b></summary>"))
+    end)
+
+    it("does not auto-fold a group below the threshold", function()
+      local lines = {}
+      local file_groups, file_stats = make_group(9)
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.is_false(vim.tbl_contains(lines, "<details>"))
+      assert.equals("### Root (+9/-0 lines)", lines[3])
+    end)
+
+    it("respects a custom autofold_threshold", function()
+      reset_config({ autofold_threshold = 3 })
+      local lines = {}
+      local file_groups, file_stats = make_group(3)
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.is_true(vim.tbl_contains(lines, "<details>"))
+    end)
+
+    it("does not auto-fold when autofold is disabled", function()
+      reset_config({ autofold = false })
+      local lines = {}
+      local file_groups, file_stats = make_group(20)
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.is_false(vim.tbl_contains(lines, "<details>"))
+    end)
+
+    it("folds all groups when foldable_file_changes is set even if autofold is off", function()
+      reset_config({ autofold = false, foldable_file_changes = true })
+      local lines = {}
+      local file_groups, file_stats = make_group(1)
+      formatter.add_file_changes_section(lines, file_groups, file_stats)
+      assert.is_true(vim.tbl_contains(lines, "<details>"))
+    end)
   end)
 
   describe("add_footer", function()

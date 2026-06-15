@@ -201,10 +201,14 @@ function M.add_file_changes_section(lines, file_groups, file_stats)
   table.insert(lines, "")
 
   local sorted_groups = M.sort_groups(file_groups)
+  local fold_all = config.options.foldable_file_changes
+  local autofold = config.options.autofold
+  local autofold_threshold = config.options.autofold_threshold
 
   for _, group_name in ipairs(sorted_groups) do
     local files = file_groups[group_name]
     if files and #files > 0 then
+      local foldable = fold_all or (autofold and #files >= autofold_threshold)
       local group_insertions, group_deletions = 0, 0
 
       for _, file_info in ipairs(files) do
@@ -215,10 +219,23 @@ function M.add_file_changes_section(lines, file_groups, file_stats)
         end
       end
 
-      table.insert(lines, string.format("### %s (+%d/-%d lines)", group_name, group_insertions, group_deletions))
+      local heading = string.format("%s (+%d/-%d lines)", group_name, group_insertions, group_deletions)
+
+      if foldable then
+        table.insert(lines, "<details>")
+        table.insert(lines, string.format("<summary><b>%s</b></summary>", heading))
+        table.insert(lines, "")
+      else
+        table.insert(lines, "### " .. heading)
+      end
 
       for _, file_info in ipairs(files) do
         table.insert(lines, string.format("- `%s`%s%s", file_info.path, file_info.stats, file_info.symbol))
+      end
+
+      if foldable then
+        table.insert(lines, "")
+        table.insert(lines, "</details>")
       end
 
       table.insert(lines, "")
