@@ -45,6 +45,9 @@ require("pr-description").setup({
   -- Include icons in final PR/MR pr-description (default: true)
   enable_icons = true,
 
+  -- Include a credit link to pr-description.nvim in the footer (default: true)
+  enable_plugin_credit = true,
+
   -- Include stats footer in final PR/MR pr-description (default: true)
   enable_stats_footer = true,
 

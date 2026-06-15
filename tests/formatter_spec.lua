@@ -329,5 +329,40 @@ describe("formatter", function()
       assert.falsy(result:find("**Branch:**", 1, true))
       assert.falsy(result:find("**Base:**", 1, true))
     end)
+
+    it("includes plugin credit by default", function()
+      local result = formatter.generate(
+        { features = { "- feat one" } },
+        { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
+        { ["a.lua"] = { insertions = 1, deletions = 0 } },
+        default_stats
+      )
+      assert.truthy(result:find("check out the plugin", 1, true))
+      assert.truthy(result:find("https://github.com/RemoteRabbit/pr-description.nvim", 1, true))
+    end)
+
+    it("omits plugin credit when enable_plugin_credit is false", function()
+      reset_config({ enable_plugin_credit = false })
+      local result = formatter.generate(
+        { features = { "- feat one" } },
+        { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
+        { ["a.lua"] = { insertions = 1, deletions = 0 } },
+        default_stats
+      )
+      assert.falsy(result:find("check out the plugin", 1, true))
+    end)
+
+    it("includes plugin credit with a separator when stats footer is disabled", function()
+      reset_config({ enable_stats_footer = false })
+      local result = formatter.generate(
+        { features = { "- feat one" } },
+        { Root = { { path = "a.lua", symbol = " ✨", stats = " (+1)" } } },
+        { ["a.lua"] = { insertions = 1, deletions = 0 } },
+        default_stats
+      )
+      assert.falsy(result:find("**Changes:**", 1, true))
+      assert.truthy(result:find("check out the plugin", 1, true))
+      assert.truthy(result:find("\n---\n", 1, true))
+    end)
   end)
 end)

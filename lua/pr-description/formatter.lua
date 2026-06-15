@@ -254,6 +254,16 @@ function M.add_footer(lines, stats)
   table.insert(lines, "**Base:** `" .. stats.base_branch .. "`")
 end
 
+---Add a credit link back to pr-description.nvim.
+---@param lines string[] The output lines table (modified in place)
+function M.add_plugin_credit(lines)
+  table.insert(lines, "")
+  table.insert(
+    lines,
+    "<sub>_If you like this template check out the plugin [here](https://github.com/RemoteRabbit/pr-description.nvim)!_</sub>"
+  )
+end
+
 ---Generate the complete PR/MR description.
 ---@param categories CommitCategories Categorized commits
 ---@param file_groups table<string, FileInfo[]> Files grouped by category
@@ -266,8 +276,15 @@ function M.generate(categories, file_groups, file_stats, stats)
   M.add_summary_section(lines)
   M.add_category_sections(lines, categories)
   M.add_file_changes_section(lines, file_groups, file_stats)
-  if config.options.enable_stats_footer then
+  local has_footer = config.options.enable_stats_footer
+  if has_footer then
     M.add_footer(lines, stats)
+  end
+  if config.options.enable_plugin_credit then
+    if not has_footer then
+      table.insert(lines, "---")
+    end
+    M.add_plugin_credit(lines)
   end
 
   return table.concat(lines, "\n")

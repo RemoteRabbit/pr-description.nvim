@@ -9,6 +9,7 @@ local M = {}
 ---@field auto_detect_platform? boolean Auto-detect GitHub vs GitLab from remote URL (default: true)
 ---@field confirm_large_pr? boolean Prompt when more than `large_pr_threshold` commits (default: true)
 ---@field enable_icons? boolean Include icons in final PR/MR pr-description (default: true)
+---@field enable_plugin_credit? boolean Include a credit link to pr-description.nvim in the footer (default: true)
 ---@field enable_stats_footer? boolean Include stats footer in final PR/MR pr-description (default: true)
 ---@field fetch_before_generate? boolean Fetch origin before generating to ensure accurate comparison (default: true)
 ---@field jira_base_url? string Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
@@ -21,6 +22,7 @@ M.defaults = {
   auto_detect_platform = true,
   confirm_large_pr = true,
   enable_icons = true,
+  enable_plugin_credit = true,
   enable_stats_footer = true,
   fetch_before_generate = true,
   jira_base_url = nil,
