@@ -11,7 +11,7 @@ repos:
       - id: mixed-line-ending
 
   - repo: https://github.com/JohnnyMorganz/StyLua
-    rev: v2.3.1
+    rev: v2.5.2
     hooks:
       - id: stylua-github
         args: [--config-path=stylua.toml]
@@ -25,7 +25,7 @@ repos:
         args: [--config=.luacheckrc]
 
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v4.2.0
+    rev: v4.4.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
