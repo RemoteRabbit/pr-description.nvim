@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0](https://github.com/RemoteRabbit/pr-description.nvim/compare/v1.1.1...v1.2.0) (2026-06-15)
+
+
+### Features
+
+* Add small footer callback to link back to this plugin ([#33](https://github.com/RemoteRabbit/pr-description.nvim/issues/33)) ([8e2390f](https://github.com/RemoteRabbit/pr-description.nvim/commit/8e2390ffb9b0af9a231982768de7b422fa122b89))
+* Autofold file change sections ([#38](https://github.com/RemoteRabbit/pr-description.nvim/issues/38)) ([126436c](https://github.com/RemoteRabbit/pr-description.nvim/commit/126436c039acc9f96fa49ae9f9b98039c72a84f6))
+
+
+### Bug Fixes
+
+* Target Main and Master before HEAD ([#36](https://github.com/RemoteRabbit/pr-description.nvim/issues/36)) ([f364125](https://github.com/RemoteRabbit/pr-description.nvim/commit/f36412587472d2f161e595b721c393781af27329))
+
 ## [1.1.1](https://github.com/RemoteRabbit/pr-description.nvim/compare/v1.1.0...v1.1.1) (2026-03-31)
 
 
