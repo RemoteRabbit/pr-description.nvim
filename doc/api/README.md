@@ -52,6 +52,7 @@ Configuration for pr-description.nvim.
 - `auto_detect_platform?` (`boolean`) — Auto-detect GitHub vs GitLab from remote URL (default: true)
 - `confirm_large_pr?` (`boolean`) — Prompt when more than `large_pr_threshold` commits (default: true)
 - `enable_icons?` (`boolean`) — Include icons in final PR/MR pr-description (default: true)
+- `enable_plugin_credit?` (`boolean`) — Include a credit link to pr-description.nvim in the footer (default: true)
 - `enable_stats_footer?` (`boolean`) — Include stats footer in final PR/MR pr-description (default: true)
 - `fetch_before_generate?` (`boolean`) — Fetch origin before generating to ensure accurate comparison (default: true)
 - `jira_base_url?` (`string`) — Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
@@ -602,6 +603,14 @@ Add the footer section with summary statistics.
 
 - `lines` (`string[]`) — The output lines table (modified in place)
 - `stats` (`DescriptionStats`) — Summary statistics
+
+### `M.add_plugin_credit(lines)`
+
+Add a credit link back to pr-description.nvim.
+
+**Parameters:**
+
+- `lines` (`string[]`) — The output lines table (modified in place)
 
 ### `M.generate(categories, file_groups, file_stats, stats)`
 
