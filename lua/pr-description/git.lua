@@ -31,19 +31,15 @@ function M.get_current_branch()
 end
 
 ---Detect the base branch to compare against.
----Tries origin/HEAD first, then falls back to origin/main, origin/master,
----and finally local main/master branches.
+---Tries origin/main, origin/master, then origin/HEAD (the remote's configured
+---default), and finally local main/master branches. origin/HEAD is checked
+---after the well-known names because it is set only at clone time and is
+---frequently stale.
 ---@return string|nil base_branch The detected base branch (e.g., "origin/main")
 ---@return string|nil error Error message if no base branch could be detected
 function M.detect_base_branch()
-  -- Try origin/HEAD (configured default branch)
-  local origin_head =
-    vim.fn.system({ "git", "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" }):gsub("\n", "")
-  if vim.v.shell_error == 0 and origin_head ~= "" then
-    return origin_head
-  end
-
-  -- Fallback: check remote tracking branches
+  -- Prefer well-known default branches on the remote. origin/HEAD is only set
+  -- at clone time and is frequently stale, so it is checked after these.
   vim.fn.system("git show-ref --verify --quiet refs/remotes/origin/main")
   if vim.v.shell_error == 0 then
     return "origin/main"
@@ -52,6 +48,14 @@ function M.detect_base_branch()
   vim.fn.system("git show-ref --verify --quiet refs/remotes/origin/master")
   if vim.v.shell_error == 0 then
     return "origin/master"
+  end
+
+  -- Fallback: origin/HEAD (the remote's configured default branch). Useful for
+  -- repos whose default is neither main nor master (e.g. "develop", "trunk").
+  local origin_head =
+    vim.fn.system({ "git", "symbolic-ref", "--quiet", "--short", "refs/remotes/origin/HEAD" }):gsub("\n", "")
+  if vim.v.shell_error == 0 and origin_head ~= "" then
+    return origin_head
   end
 
   -- Fallback: check local branches
