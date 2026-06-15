@@ -39,6 +39,12 @@ require("pr-description").setup({
   -- Auto-detect GitHub vs GitLab from remote URL (default: true)
   auto_detect_platform = true,
 
+  -- Auto-fold a file change group when it has many files (default: true)
+  autofold = true,
+
+  -- Number of files in a group before it auto-folds (default: 10)
+  autofold_threshold = 10,
+
   -- Prompt when more than `large_pr_threshold` commits (default: true)
   confirm_large_pr = true,
 
@@ -53,6 +59,9 @@ require("pr-description").setup({
 
   -- Fetch origin before generating to ensure accurate comparison (default: true)
   fetch_before_generate = true,
+
+  -- Wrap each file change group in a collapsible <details> block (default: false)
+  foldable_file_changes = false,
 
   -- Base URL for Jira ticket links (e.g., "https://company.atlassian.net/browse")
   jira_base_url = nil,
