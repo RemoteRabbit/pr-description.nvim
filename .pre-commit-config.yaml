@@ -11,7 +11,7 @@ repos:
       - id: mixed-line-ending
 
   - repo: https://github.com/JohnnyMorganz/StyLua
-    rev: v2.3.1
+    rev: v2.5.2
     hooks:
       - id: stylua-github
         args: [--config-path=stylua.toml]
