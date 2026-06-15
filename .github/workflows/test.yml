@@ -46,7 +46,7 @@ jobs:
       - name: Check formatting
         run: stylua --check lua/ plugin/ tests/
 
-      - uses: leafo/gh-actions-lua@v12
+      - uses: leafo/gh-actions-lua@v13
         with:
           luaVersion: "5.1"
 
