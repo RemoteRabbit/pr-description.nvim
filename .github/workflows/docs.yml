@@ -52,27 +52,10 @@ jobs:
         with:
           luaVersion: "5.1"
 
-      - uses: leafo/gh-actions-luarocks@v6
-
       - name: Generate API docs
         run: |
           mkdir -p doc/api
-          echo "# API Reference" > doc/api/README.md
-          echo "" >> doc/api/README.md
-          echo "Auto-generated from LuaCATS annotations." >> doc/api/README.md
-          echo "" >> doc/api/README.md
-
-          for f in lua/pr-description/*.lua; do
-            module=$(basename "$f" .lua)
-            echo "## pr-description.${module}" >> doc/api/README.md
-            echo "" >> doc/api/README.md
-            # Extract @brief blocks
-            sed -n '/---@brief \[\[/,/---@brief \]\]/{ /---@brief/d; s/^--- //; s/^---//; p; }' "$f" >> doc/api/README.md
-            echo "" >> doc/api/README.md
-            # Extract function signatures with their doc comments
-            grep -B 20 "^function M\." "$f" | grep "^---" | sed 's/^--- //' | sed 's/^---//' >> doc/api/README.md
-            echo "" >> doc/api/README.md
-          done
+          lua scripts/generate-api-docs.lua
 
       - name: Create PR for API docs changes
         id: api-docs-pr
