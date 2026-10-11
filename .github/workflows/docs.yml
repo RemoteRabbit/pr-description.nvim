@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Generate vimdoc
-        uses: kdheepak/panvimdoc@1f9433df889d4ab3daa5ea52c7069cb489ad47d6 # main
+        uses: kdheepak/panvimdoc@4c8eaecb80058694171627629c6ff59bcf41472d # main
         with:
           vimdoc: pr-description
           version: "Neovim >= 0.9.0"
